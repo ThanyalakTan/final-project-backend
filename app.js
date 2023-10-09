@@ -5,6 +5,7 @@ const port = 8100;
 const UserModel = require('./user-schema');   // Import userModel from user-schema.js
 const mongoose = require('mongoose');   // Import mongoose
 const ActivityModel = require('./activity-schema'); // Import ActivityModel from activity-schema.js
+const GoalModel = require('./goal-schema'); // Import GoalModel from goal-schema.js
 
 // Connect mongoose to MongoDB Atlas
 mongoose.connect('mongodb+srv://thanyalak15601:1wln2TKZjsElgrXb@cluster0.uta1bz1.mongodb.net/?retryWrites=true&w=majority')
@@ -50,7 +51,7 @@ app.post('/login', async (req, res) => {
   }
 })
 
-// Create route for Create Activity
+// Create route for Create Activities
 app.post('/createactivity', (req, res) => {
   const { activityType, activityName, description, duration, date } = req.body;
   if (activityType && activityName && duration && date) {
@@ -58,7 +59,20 @@ app.post('/createactivity', (req, res) => {
     console.log('Create activity success')
     res.status(200).json(userActivity);
   } else {
-    res.status(400).json('Please fill required form: Activity Type, Activity Name, Duration, and Date')
+    res.status(400).json('Please fill the required form: Activity Type, Activity Name, Duration, and Date')
+  }
+})
+
+// Create route for Create Goals
+app.post('/creategoal', (req, res) => {
+  const { activityType, activityName, duration, distance, deadline } = req.body;
+  // console.log(req.body)
+  if(activityType && activityName && duration && deadline) {
+    const userGoal = GoalModel.create({ activityType, activityName, duration, distance, deadline })
+    console.log("Create goal success");
+    res.status(200).json(userGoal);
+  } else {
+    res.status(400).json('Please fill the require form: Activity Type, Activity Name, Duration, and Deadline')
   }
 })
 
