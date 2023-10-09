@@ -66,7 +66,6 @@ app.post('/createactivity', (req, res) => {
 // Create route for Create Goals
 app.post('/creategoal', (req, res) => {
   const { activityType, activityName, duration, distance, deadline } = req.body;
-  // console.log(req.body)
   if(activityType && activityName && duration && deadline) {
     const userGoal = GoalModel.create({ activityType, activityName, duration, distance, deadline })
     console.log("Create goal success");
