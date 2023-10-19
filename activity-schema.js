@@ -17,8 +17,16 @@ const ActivitySchema = new mongoose.Schema({
     type: Number,
     require: true
   },
+  distance: {
+    type: Number,
+    require: false
+  },
   date: {
     type: Date,
+    require: true
+  },
+  userId: {
+    type: String,
     require: true
   }
 })

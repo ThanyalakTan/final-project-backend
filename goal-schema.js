@@ -20,6 +20,10 @@ const GoalSchema = new mongoose.Schema({
   deadline: {
     type: Date,
     require: true
+  },
+  userId: {
+    type: String,
+    require: true
   }
 })
 
