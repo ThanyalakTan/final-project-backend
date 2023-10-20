@@ -2,6 +2,7 @@ const UserModel = require("../user-schema");
 const jwt = require('jsonwebtoken');
 
 const verifyAuth = async (req, res, next) => {
+  console.log('req.', req)
   const bearerHeader = req.headers['authorization']
   console.log('authorization=>',bearerHeader);
   if(bearerHeader !== undefined) {

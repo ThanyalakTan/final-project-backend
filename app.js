@@ -139,7 +139,8 @@ app.get('/activity', verifyAuth, async (req, res) => {
   console.log(userId)
   const findActivity = await ActivityModel.find({userId})
   console.log(findActivity,'.....findActivity')
-  res.status(200).json('Get Activity');
+  res.status(200).json(findActivity);
+
 })
 
 // read(get) goals
