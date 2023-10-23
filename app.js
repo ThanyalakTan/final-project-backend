@@ -38,7 +38,8 @@ app.post('/signup', async (req, res) => {
       if(findUser){
         return res.status(400).json('Sorry, email already exits')
       }
-      const userData = await UserModel.create({ firstname, lastname, email, password:bcrypt.hashSync(password, salt), birthdate, gender })
+      const userData = await UserModel.create({ firstname, lastname, email, password:bcrypt.hashSync(password, salt), height, weight, age, birthdate, gender })
+      console.log(userData);
       return res.status(200).json(userData);
       } else {
         res.status(400).json(`Please fill empty form`);
