@@ -27,20 +27,18 @@ const salt = bcrypt.genSaltSync(10);
 
 // Create route Signup when click Signup
 app.post('/signup', async (req, res) => {
-  const { firstname, lastname, email, password, rePassword, birthdate, gender } = req.body;   // get value from body
-  console.log(firstname, lastname, email, password, rePassword, birthdate, gender)
+  const { firstname, lastname, email, password, rePassword, height, weight, age, birthdate, gender } = req.body;   // get value from body
+  console.log(firstname, lastname, email, password, rePassword, height, weight, age, birthdate, gender)
   try {
-    if(firstname && lastname && email && password && rePassword && birthdate && gender) {
+    if(firstname && lastname && email && password && rePassword && height && weight && age && birthdate && gender) {
       if(password !== rePassword) {
         res.status(400).json(`Passwords did not match`);
       }
       const findUser = await UserModel.findOne({ email });
-      console.log('findUser => ', findUser);
       if(findUser){
         return res.status(400).json('Sorry, email already exits')
       }
       const userData = await UserModel.create({ firstname, lastname, email, password:bcrypt.hashSync(password, salt), birthdate, gender })
-      console.log(`Form Succesfully Submitted`)
       return res.status(200).json(userData);
       } else {
         res.status(400).json(`Please fill empty form`);
@@ -52,10 +50,8 @@ app.post('/signup', async (req, res) => {
 // Create route Login when click login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
   if(email && password) {
     const findUserLogin = await UserModel.findOne({ email })
-    console.log("findUserLogin => ", findUserLogin)
     if(!findUserLogin) {
       return res.status(404).json('Email or password incorrect')
     }
@@ -78,7 +74,6 @@ app.post('/activity', verifyAuth, async (req, res) => {
   const userId = req.userId;
   if (activityType && activityName && duration && date) {
     const userActivity = await ActivityModel.create({ activityType, activityName, description, duration, distance, date, userId });
-    console.log('Create activity success');
     res.status(200).json(userActivity);
   } else {
     res.status(400).json('Please fill the required form: Activity Type, Activity Name, Duration, and Date');
@@ -87,12 +82,10 @@ app.post('/activity', verifyAuth, async (req, res) => {
 
 // Create route when click Create Goals
 app.post('/goal', verifyAuth, async (req, res) => {
-  const { activityType, activityName, duration, distance, deadline } = req.body;
+  const { activityType, activityName, duration, distance, deadline, status } = req.body;
   const userId = req.userId;
-  console.log(userId);
   if(activityType && activityName && duration && deadline) {
-    const userGoal = await GoalModel.create({ activityType, activityName, duration, distance, deadline, userId });
-    console.log("Create goal success");
+    const userGoal = await GoalModel.create({ activityType, activityName, duration, distance, deadline, userId, status });
     res.status(200).json(userGoal);
   } else {
     res.status(400).json('Please fill the require form: Activity Type, Activity Name, Duration, and Deadline');
@@ -103,12 +96,9 @@ app.post('/goal', verifyAuth, async (req, res) => {
 app.put('/activity/:id', verifyAuth, async (req, res) => {
   const { activityType, activityName, description, duration, distance, date } = req.body;
   const userId = req.userId;
-  console.log(userId);
   const activityId = req.params.id;
-  console.log(activityId);
   if( activityType && activityName && description && duration && date ) {
     const updateActivity = await ActivityModel.findOneAndUpdate({ _id: activityId, userId: userId }, { activityType, activityName, description, duration, distance, date }, {new: true});
-    console.log("Activity Updated");
     res.status(200).json(updateActivity);
   } else {
     res.status(400).json('Please fill the required form: Activity Type, Activity Name, Duration, and Date');
@@ -117,15 +107,11 @@ app.put('/activity/:id', verifyAuth, async (req, res) => {
 
 // update goals
 app.put('/goal/:id', verifyAuth, async (req, res) => {
-  const { activityType, activityName, duration, distance, deadline } = req.body;
-  // console.log(req.body)
+  const { activityType, activityName, duration, distance, deadline, status } = req.body;
   const userId = req.userId;
-  // console.log(userId);
   const goalId = req.params.id;
-  // console.log(goalId);
   if( activityType && activityName && duration && deadline ) {
-    const updateGoal = await GoalModel.findOneAndUpdate({ _id: goalId, userId: userId}, { activityType, activityName, duration, distance, deadline }, {new: true});
-    console.log(updateGoal);
+    const updateGoal = await GoalModel.findOneAndUpdate({ _id: goalId, userId: userId}, { activityType, activityName, duration, distance, deadline, status }, {new: true});
     res.status(200).json(updateGoal);
   } else {
     res.status(400).json('Please fill the require form: Activity Type, Activity Name, Duration, and Deadline');
@@ -136,29 +122,22 @@ app.put('/goal/:id', verifyAuth, async (req, res) => {
 // read(get) the activities
 app.get('/activity', verifyAuth, async (req, res) => {
   const userId = req.userId;
-  console.log(userId)
   const findActivity = await ActivityModel.find({userId})
-  console.log(findActivity,'.....findActivity')
   res.status(200).json(findActivity);
-
 })
 
 // read(get) goals
 app.get('/goal', verifyAuth, async (req, res) => {
   const userId = req.userId;
-  console.log(userId)
   const findGoal = await GoalModel.find({userId})
-  console.log(findGoal,'.....findGoal')
-  res.status(200).json('Get Goal');
+  res.status(200).json(findGoal);
 })
 
 // delete activity
 app.delete('/activity/:id', verifyAuth, async (req, res) => {
   try {
     const userId = req.userId;
-    console.log(userId);
     const activityId = req.params.id;
-    console.log(activityId);
     const deleteActivity = await ActivityModel.findByIdAndRemove({ _id: activityId, userId: userId });
     res.status(200).json(deleteActivity);
   } catch (error) {
@@ -170,9 +149,7 @@ app.delete('/activity/:id', verifyAuth, async (req, res) => {
 app.delete('/goal/:id', verifyAuth, async (req, res) => {
   try {
     const userId = req.userId;
-    console.log(userId);
     const goalId = req.params.id;
-    console.log(goalId);
     const deleteGoal = await GoalModel.findByIdAndRemove({ _id: goalId, userId: userId });
     res.status(200).json(deleteGoal);
   } catch (error) {

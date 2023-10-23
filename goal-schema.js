@@ -24,6 +24,10 @@ const GoalSchema = new mongoose.Schema({
   userId: {
     type: String,
     require: true
+  },
+  status: {
+    type: String,
+    require: true
   }
 })
 
