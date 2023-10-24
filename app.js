@@ -22,7 +22,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-
 const salt = bcrypt.genSaltSync(10);
 
 // Create route Signup when click Signup
@@ -72,9 +71,11 @@ app.post('/login', async (req, res) => {
 // Create route when click Create Activities
 app.post('/activity', verifyAuth, async (req, res) => {
   const { activityType, activityName, description, duration, distance, date } = req.body;
+  console.log('description=>', description)
   const userId = req.userId;
   if (activityType && activityName && duration && date) {
     const userActivity = await ActivityModel.create({ activityType, activityName, description, duration, distance, date, userId });
+    console.log(userActivity)
     res.status(200).json(userActivity);
   } else {
     res.status(400).json('Please fill the required form: Activity Type, Activity Name, Duration, and Date');
@@ -95,11 +96,13 @@ app.post('/goal', verifyAuth, async (req, res) => {
 
 // update activities
 app.put('/activity/:id', verifyAuth, async (req, res) => {
-  const { activityType, activityName, description, duration, distance, date } = req.body;
+  const { activityName, description, duration, distance } = req.body;
+  console.log(activityName, description, duration, distance)
   const userId = req.userId;
   const activityId = req.params.id;
-  if( activityType && activityName && description && duration && date ) {
-    const updateActivity = await ActivityModel.findOneAndUpdate({ _id: activityId, userId: userId }, { activityType, activityName, description, duration, distance, date }, {new: true});
+  if( activityName && description && duration ) {
+    const updateActivity = await ActivityModel.findOneAndUpdate({ _id: activityId, userId: userId }, 
+    { activityName, description, duration, distance }, {new: true});
     res.status(200).json(updateActivity);
   } else {
     res.status(400).json('Please fill the required form: Activity Type, Activity Name, Duration, and Date');
@@ -119,10 +122,10 @@ app.put('/goal/:id', verifyAuth, async (req, res) => {
   }
 })
 
-
 // read(get) the activities
 app.get('/activity', verifyAuth, async (req, res) => {
   const userId = req.userId;
+  console.log(req.userId)
   const findActivity = await ActivityModel.find({userId})
   res.status(200).json(findActivity);
 })
@@ -156,6 +159,24 @@ app.delete('/goal/:id', verifyAuth, async (req, res) => {
   } catch (error) {
     console.log(error)
   }
+})
+
+app.get('/profile', verifyAuth, async (req, res) => {
+  const userId = req.userId;
+  try {
+    const getUser = await UserModel.findById(userId);
+    res.status(200).json(getUser);
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+app.put('/profile', verifyAuth, async (req, res) => {
+  const userId = req.userId;
+  const { firstname, lastname, height, weight, age } = req.body;   // get value from body
+  console.log(firstname)
+  const updateProfile = await UserModel.findByIdAndUpdate(userId, { firstname, lastname, height, weight, age }, {new:true})
+  res.status(200).json(updateProfile);
 })
 
 // Run on port 3000
