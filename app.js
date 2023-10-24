@@ -100,7 +100,7 @@ app.put('/activity/:id', verifyAuth, async (req, res) => {
   console.log(activityName, description, duration, distance)
   const userId = req.userId;
   const activityId = req.params.id;
-  if( activityName && description && duration ) {
+  if( activityName && duration ) {
     const updateActivity = await ActivityModel.findOneAndUpdate({ _id: activityId, userId: userId }, 
     { activityName, description, duration, distance }, {new: true});
     res.status(200).json(updateActivity);
